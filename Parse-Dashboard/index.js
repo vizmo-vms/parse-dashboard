@@ -48,7 +48,7 @@ const mountPath = program.mountPath || process.env.MOUNT_PATH || '/';
 const allowInsecureHTTP = program.allowInsecureHTTP || process.env.PARSE_DASHBOARD_ALLOW_INSECURE_HTTP;
 const cookieSessionSecret = program.cookieSessionSecret || process.env.PARSE_DASHBOARD_COOKIE_SESSION_SECRET;
 const trustProxy = program.trustProxy || process.env.PARSE_DASHBOARD_TRUST_PROXY;
-const dev = program.dev;
+const dev = program.dev || process.env.PARSE_DASHBOARD_DEV;
 
 if (trustProxy && allowInsecureHTTP) {
   console.log('Set only trustProxy *or* allowInsecureHTTP, not both.  Only one is needed to handle being behind a proxy.');
@@ -112,7 +112,7 @@ if (!program.config && !process.env.PARSE_DASHBOARD_CONFIG) {
       ];
     }
   } else if (!configServerURL && !configMasterKey && !configAppName) {
-    configFile = path.join(__dirname, 'parse-dashboard-config.json');
+    configFile = path.join(__dirname, 'config/config.json');
   }
 } else if (!program.config && process.env.PARSE_DASHBOARD_CONFIG) {
   configFromCLI = {
@@ -177,7 +177,7 @@ config.data.trustProxy = trustProxy;
 let dashboardOptions = { allowInsecureHTTP, cookieSessionSecret, dev };
 app.use(mountPath, parseDashboard(config.data, dashboardOptions));
 let server;
-if(!configSSLKey || !configSSLCert){
+if (!configSSLKey || !configSSLCert) {
   // Start the server.
   server = app.listen(port, host, function () {
     console.log(`The dashboard is now available at http://${server.address().address}:${server.address().port}${mountPath}`);
